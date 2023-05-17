@@ -6,13 +6,11 @@ import ru.nsu.ccfit.gudkov.minesweeper.Model.CellContent;
 import ru.nsu.ccfit.gudkov.minesweeper.Model.GameState;
 import ru.nsu.ccfit.gudkov.minesweeper.Model.MinesweeperModel;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Properties;
 
 public class MainPresenter {
     MinesweeperModel model;
@@ -56,7 +54,6 @@ public class MainPresenter {
                     cell.setOpen(true);
                 }
                 cellsToUpdate.addAll(model.getAllBombs());
-                // TODO: доделать проигрыш
             } else if (cells[coordY][coordX].getContent() == CellContent.ZERO) {
                 openNearCells(coordX, coordY, cells, cellsToUpdate);
             } else {
@@ -132,4 +129,21 @@ public class MainPresenter {
             }
         }
     }
+
+    public void easyButtonClick() throws IOException {
+        Properties properties = new Properties();
+        InputStream inputStream = MainPresenter.class.getClassLoader().getResourceAsStream("./settings.properties");
+        properties.load(inputStream);
+        properties.put("h", "10");
+        properties.setProperty("h", "10");
+        properties.setProperty("width", "10");
+        properties.setProperty("flags", "10");
+        properties.setProperty("mines", "10");
+        System.out.println(properties.getProperty("width"));
+        properties.replace("width", "100");
+        System.out.println(properties.getProperty("width"));
+
+
+    }
+
 }
