@@ -17,15 +17,17 @@ public class MainView extends JFrame {
 
     public MainView() {
         super("BorderLayoutTest");
+
+
         JButton[][] buttons = new JButton[9][9];
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(30 * 9, 30 * 9);
+//        setSize(30 * 9, 30 * 9 + 50);
         // Панель содержимого
         Container container = getContentPane();
 
         JPanel panel = new JPanel(new GridLayout(9, 9));
-        panel.setSize(30 * 9, 30 * 9);
+        panel.setPreferredSize(new Dimension(9 * 30, 9 * 30));
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 JButton button = new JButton();
@@ -91,12 +93,12 @@ public class MainView extends JFrame {
         });
 
 
-
         highScore.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 System.out.println("1234567890");
+                listener.statisticButtonClick();
             }
         });
 
@@ -114,8 +116,6 @@ public class MainView extends JFrame {
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 JOptionPane.showMessageDialog(getContentPane(), "Minesweeper!");
-                JFrame newf = new JFrame("213");
-                newf.setVisible(true);
             }
         });
 
@@ -128,6 +128,7 @@ public class MainView extends JFrame {
         container.add(new JButton("Юг"), "South");
         // При отсутствии 2-го параметра компонент размещается в центре
         container.add(panel);
+        pack();
         // Открываем окно
         setVisible(true);
     }
