@@ -1,5 +1,16 @@
 package ru.nsu.ccfit.gudkov.minesweeper.Model;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MinesweeperModel {
@@ -59,7 +70,6 @@ public class MinesweeperModel {
     }
 
 
-
     public Cell[][] getCells() {
         return cells;
     }
@@ -88,7 +98,7 @@ public class MinesweeperModel {
     public ArrayList<Cell> getAllBombs() {
         ArrayList<Cell> bombs = new ArrayList<>();
 
-        for(int i = 0; i < height; i++) {
+        for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (cells[i][j].getContent() == CellContent.BOMB) {
                     bombs.add(cells[i][j]);
@@ -130,5 +140,36 @@ public class MinesweeperModel {
                 }
             }
         }
+    }
+
+    private void setGameSettings() {
+        InputStream file = StatModel.class.getClassLoader().getResourceAsStream("./settings.xml");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        Document doc = null;
+        try {
+            doc = db.parse(file);
+        } catch (SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        doc.getDocumentElement().normalize();
+        System.out.println("Root element: " + doc.getDocumentElement().getNodeName());
+
+        NodeList nodeList = doc.getElementsByTagName("selected");
+        Node node = nodeList.item(0);
+        Element element = (Element) node;
+        String mode = ((Element) node).getElementsByTagName("mode").item(0).getTextContent();
+
+
+        NodeList nodeList1 = doc.getElementsByTagName(mode);
+
+
+
+
     }
 }

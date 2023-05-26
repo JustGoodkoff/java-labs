@@ -12,9 +12,14 @@ import java.util.Properties;
 public class Application {
 
     public static void StartGame() {
-        Properties properties = new Properties();
-        MinesweeperModel model = new MinesweeperModel();
+
+        // TODO: добавить таймер
+        // TODO: добавить статистику
+        // TODO: добавить about
         // TODO: добавить передачу числа строк и столбцов в view
+
+
+        MinesweeperModel model = new MinesweeperModel();
         MainView mainView = new MainView();
         try {
             MainPresenter mainPresenter = new MainPresenter(model, mainView);
