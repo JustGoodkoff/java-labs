@@ -1,42 +1,36 @@
 package ru.nsu.ccfit.gudkov.minesweeper.Model;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.nsu.ccfit.gudkov.minesweeper.StringConstants;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MinesweeperModel {
-    private Cell[][] cells = new Cell[9][9];
-    private int bombs = 12;
+    private int bombs = 10;
     private int maxFlags = 10;
     private int currentUsedFlags = 0;
     private int height = 9;
     private int width = 9;
 
-    public int getCurrentOpenedCells() {
-        return currentOpenedCells;
+    private String mode = StringConstants.EASY_MODE;
+
+    private Cell[][] cells;
+
+    public String getMode() {
+        return mode;
     }
 
-    public void setCurrentOpenedCells(int currentOpenedCells) {
-        this.currentOpenedCells = currentOpenedCells;
+    public int getCurrentOpenedCells() {
+        return currentOpenedCells;
     }
 
     private int currentOpenedCells = 0;
 
     public int getMaxFlags() {
         return maxFlags;
-    }
-
-    public void setMaxFlags(int maxFlags) {
-        this.maxFlags = maxFlags;
     }
 
     public int getCurrentUsedFlags() {
@@ -78,21 +72,14 @@ public class MinesweeperModel {
         return height;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
     public int getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
 
-
-    public MinesweeperModel() {
-
+    public MinesweeperModel() throws IOException {
+        setGameSettings();
+        cells = new Cell[height][width];
     }
 
     public ArrayList<Cell> getAllBombs() {
@@ -116,9 +103,6 @@ public class MinesweeperModel {
         }
 
         int bombsRemainder = bombs;
-
-//        System.out.println(xRandCoord);
-//        System.out.println(yRandCoord);
         while (bombsRemainder > 0) {
             int xRandCoord = (int) (Math.random() * 100 % width);
             int yRandCoord = (int) (Math.random() * 100 % height);
@@ -133,7 +117,7 @@ public class MinesweeperModel {
     private void updateNearCells(int xRandCoord, int yRandCoord) {
         for (int i = yRandCoord - 1; i < yRandCoord + 2; i++) {
             for (int j = xRandCoord - 1; j < xRandCoord + 2; j++) {
-                if (i >= 0 && i < width && j >= 0 && j < height) {
+                if (i >= 0 && i < height && j >= 0 && j < width) {
                     if (cells[i][j].getContent() != CellContent.BOMB) {
                         cells[i][j].setContent(cells[i][j].getContent().nextNumber());
                     }
@@ -142,34 +126,24 @@ public class MinesweeperModel {
         }
     }
 
-    private void setGameSettings() {
-        InputStream file = StatModel.class.getClassLoader().getResourceAsStream("./settings.xml");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
-        try {
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-        Document doc = null;
-        try {
-            doc = db.parse(file);
-        } catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        doc.getDocumentElement().normalize();
-        System.out.println("Root element: " + doc.getDocumentElement().getNodeName());
 
-        NodeList nodeList = doc.getElementsByTagName("selected");
-        Node node = nodeList.item(0);
-        Element element = (Element) node;
-        String mode = ((Element) node).getElementsByTagName("mode").item(0).getTextContent();
+    private void setGameSettings() throws IOException {
 
+        InputStream file = StatModel.class.getClassLoader().getResourceAsStream(StringConstants.SETTINGS_PATH);
 
-        NodeList nodeList1 = doc.getElementsByTagName(mode);
+        ObjectMapper objectMapper = new ObjectMapper();
 
+        JsonNode rootNode = objectMapper.readTree(file);
+        JsonNode modeNode = rootNode.path(StringConstants.MODE);
+        mode = modeNode.asText();
 
+        System.out.println(mode);
 
+        JsonNode chosenModeNode = rootNode.path(mode);
+        width = chosenModeNode.get(StringConstants.WIDTH).asInt();
+        height = chosenModeNode.get(StringConstants.HEIGHT).asInt();
+        bombs = chosenModeNode.get(StringConstants.BOMBS).asInt();
+        maxFlags = chosenModeNode.get(StringConstants.FLAGS).asInt();
 
     }
 }

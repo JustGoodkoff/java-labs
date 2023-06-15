@@ -13,19 +13,15 @@ public class Application {
 
     public static void StartGame() {
 
-        // TODO: добавить таймер
-        // TODO: добавить статистику
-        // TODO: добавить about
-        // TODO: добавить передачу числа строк и столбцов в view
-
-
-        MinesweeperModel model = new MinesweeperModel();
-        MainView mainView = new MainView();
+        MinesweeperModel model = null;
         try {
-            MainPresenter mainPresenter = new MainPresenter(model, mainView);
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+            model = new MinesweeperModel();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        MainView mainView = new MainView();
+        MainPresenter mainPresenter = new MainPresenter(model, mainView);
+
     }
 
     public static void main(String[] args) {

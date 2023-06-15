@@ -4,7 +4,7 @@ public class Cell {
 
     private boolean isOpen = false;
     private boolean isFlagged = false;
-    private CellContent content = CellContent.ZERO;
+    private CellContent content;
 
     public int getXCoord() {
         return xCoord;

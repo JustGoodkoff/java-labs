@@ -3,78 +3,48 @@ package ru.nsu.ccfit.gudkov.minesweeper;
 import ru.nsu.ccfit.gudkov.minesweeper.Presenters.MainPresenter;
 
 import javax.swing.*;
+import javax.xml.transform.TransformerException;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Objects;
 
 public class MainView extends JFrame {
-
-    MainPresenter listener;
+    private MainPresenter presenter;
 
     public MainView() {
-        super("BorderLayoutTest");
+        super(StringConstants.MINESWEEPER_TITLE);
 
+    }
 
-        JButton[][] buttons = new JButton[9][9];
+    public void createUI() {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-//        setSize(30 * 9, 30 * 9 + 50);
         // Панель содержимого
         Container container = getContentPane();
 
-        JPanel panel = new JPanel(new GridLayout(9, 9));
-        panel.setPreferredSize(new Dimension(9 * 30, 9 * 30));
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                JButton button = new JButton();
-                ImageIcon icon = new ImageIcon((Objects.requireNonNull(MainView.class.getClassLoader().getResource("./CLOSED.png"))));
-                button.setIcon(icon);
-                buttons[i][j] = button;
-                panel.add(button);
-                int coordX = j;
-                int coordY = i;
-                button.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            System.out.println(String.valueOf(coordX) + " " + String.valueOf(coordY));
-                            listener.leftClick(coordX, coordY);
-                        } else if (e.getButton() == MouseEvent.BUTTON3) {
-                            listener.rightClick(coordX, coordY);
-                        }
-
-                        try {
-                            listener.updateField(buttons);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                });
-            }
-        }
+        JPanel panel = presenter.createMainPanel();
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu game = new JMenu("Game");
-        JMenuItem newGameItem = new JMenuItem("New Game");
-        JMenuItem aboutGameItem = new JMenuItem("About");
+        JMenu game = new JMenu(StringConstants.GAME);
+        JMenuItem newGameItem = new JMenuItem(StringConstants.NEW_GAME);
+        JMenuItem aboutGameItem = new JMenuItem(StringConstants.ABOUT);
 
-        JMenu highScore = new JMenu("High Scores");
+        JMenu highScore = new JMenu(StringConstants.HIGH_SCORES);
 
-        JMenu settings = new JMenu("Settings");
-        JRadioButtonMenuItem easy = new JRadioButtonMenuItem("Easy: field 9x9, 10 mines");
-        JRadioButtonMenuItem medium = new JRadioButtonMenuItem("Medium: field 16x16, 40 mines");
-        JRadioButtonMenuItem hard = new JRadioButtonMenuItem("Hard: field 16x30, 99 mines");
+        JMenu settings = new JMenu(StringConstants.SETTINGS);
+        JRadioButtonMenuItem easy = new JRadioButtonMenuItem(StringConstants.EASY_MODE_PARAMS);
+        JRadioButtonMenuItem medium = new JRadioButtonMenuItem(StringConstants.MEDIUM_MODE_PARAMS);
+        JRadioButtonMenuItem hard = new JRadioButtonMenuItem(StringConstants.HARD_MODE_PARAMS);
 
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(easy);
         buttonGroup.add(medium);
         buttonGroup.add(hard);
-        easy.setSelected(true);
+
+        presenter.setSelectedMode(easy, medium, hard);
+
         settings.add(easy);
         settings.add(medium);
         settings.add(hard);
@@ -83,12 +53,24 @@ public class MainView extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                try {
-                    listener.easyButtonClick();
-                    System.out.println(123);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                presenter.easyButtonClick();
+
+            }
+        });
+
+        medium.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                presenter.mediumButtonClick();
+            }
+        });
+
+        hard.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                presenter.hardButtonClick();
             }
         });
 
@@ -97,8 +79,7 @@ public class MainView extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                System.out.println("1234567890");
-                listener.statisticButtonClick();
+                presenter.statisticButtonClick();
             }
         });
 
@@ -115,7 +96,7 @@ public class MainView extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                JOptionPane.showMessageDialog(getContentPane(), "Minesweeper!");
+                presenter.showAboutDialog();
             }
         });
 
@@ -124,16 +105,20 @@ public class MainView extends JFrame {
         menuBar.add(game);
         menuBar.add(highScore);
         menuBar.add(settings);
-        container.add(menuBar, "North");
-        container.add(new JButton("Юг"), "South");
-        // При отсутствии 2-го параметра компонент размещается в центре
+        JLabel timerLabel = new JLabel(StringConstants.START_TIME_LABEL);
+
+        presenter.createTimer(timerLabel);
+
+        container.add(menuBar, StringConstants.NORTH);
+        container.add(timerLabel, StringConstants.SOUTH);
         container.add(panel);
         pack();
-        // Открываем окно
+        setResizable(false);
         setVisible(true);
     }
 
-    public void addListener(MainPresenter presenter) {
-        listener = presenter;
+
+    public void addPresenter(MainPresenter presenter) {
+        this.presenter = presenter;
     }
 }
