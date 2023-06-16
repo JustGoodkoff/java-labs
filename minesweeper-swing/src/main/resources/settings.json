@@ -1,0 +1,21 @@
+{
+  "mode": "easy",
+  "easy": {
+    "height": 9,
+    "width": 9,
+    "bombs": 10,
+    "flags": 10
+  },
+  "medium": {
+    "height": 16,
+    "width": 16,
+    "bombs": 40,
+    "flags": 40
+  },
+  "hard": {
+    "height": 16,
+    "width": 30,
+    "bombs": 99,
+    "flags": 99
+  }
+}
